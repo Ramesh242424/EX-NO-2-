@@ -1,10 +1,12 @@
 ## EX. NO:2 IMPLEMENTATION OF PLAYFAIR CIPHER
 
+## NAME : KAVIBHARATHI K
+## REG NO : 212224220045
+
  
 
 ## AIM:
-
-
+ 
 To write a C program to implement the Playfair Substitution technique.
 
 ## DESCRIPTION:
@@ -32,145 +34,55 @@ STEP-5: Display the obtained cipher text.
 
 
 
-Program:
-```
-def prepare_text(text):
-    """ Prepare plaintext by replacing 'j' with 'i' and adding 'x' for repeated or odd characters """
-    text = text.lower().replace("j", "i")
-    prepared = ""
-    
-    i = 0
-    while i < len(text):
-        a = text[i]
-        if i + 1 < len(text):
-            b = text[i + 1]
-            if a == b:
-                prepared += a + "x"
-                i += 1
-            else:
-                prepared += a + b
-                i += 2
-        else:
-            prepared += a + "x"
-            i += 1
+## PROGRAM:
+~~~
+#include<stdio.h>
+#include<string.h>
+int main()
+{
+    unsigned int a[3][3]={{6,24,1},{13,16,10},{20,17,15}};
+    unsigned int b[3][3]={{8,5,10},{21,8,21},{21,12,8}};
+    int i,j, t=0;
+    unsigned int c[20],d[20];
+    char msg[20];
+    scanf("%s",msg);
+    printf("Enter plain text:%s\n",msg);
 
-    if len(prepared) % 2 != 0:
-        prepared += "x"
+    for(i=0;i<strlen(msg);i++)
+    {
+        c[i]=msg[i]-65;
+        printf("%d ",c[i]);
+    }
+    for(i=0;i<3;i++)
+    {
+        t=0;
+        for(j=0;j<3;j++)
+        {
+            t=t+(a[i][j]*c[j]);
+        }
+        d[i]=t%26;
+    }
+    printf("\nEncrypted Cipher Text :");
+    for(i=0;i<3;i++)
+    printf(" %c",d[i]+65);
+    for(i=0;i<3;i++)
+    {
+        t=0;
+        for(j=0;j<3;j++)
+        {
+            t=t+(b[i][j]*d[j]);
+        }
+        c[i]=t%26;
+    }
+    printf("\nDecrypted Cipher Text :");
+    for(i=0;i<3;i++)
+    printf(" %c",c[i]+65);
+    return 0;
+}
+~~~
+## OUTPUT:
 
-    return prepared
+<img width="1143" height="1006" alt="Screenshot 2025-08-22 142525" src="https://github.com/user-attachments/assets/41a07109-3668-49aa-bbc9-82acf73b1db8" />
 
-
-def generate_key_matrix(key):
-    """ Generate the 5x5 key matrix """
-    key = key.lower().replace("j", "i")
-    matrix = []
-    used = set()
-
-    # Fill with key characters
-    for char in key:
-        if char not in used and char.isalpha():
-            used.add(char)
-            matrix.append(char)
-
-    # Fill remaining characters
-    for i in range(26):
-        letter = chr(i + ord('a'))
-        if letter != 'j' and letter not in used:
-            matrix.append(letter)
-
-    # Convert to 5x5 matrix
-    return [matrix[i * 5:(i + 1) * 5] for i in range(5)]
-
-
-def find_position(matrix, char):
-    """ Find the row and column of a character in the matrix """
-    for row in range(5):
-        for col in range(5):
-            if matrix[row][col] == char:
-                return row, col
-    return None
-
-
-def encrypt_pair(matrix, a, b):
-    """ Encrypt a pair of characters """
-    row1, col1 = find_position(matrix, a)
-    row2, col2 = find_position(matrix, b)
-
-    if row1 == row2:
-        # Same row: move right
-        return matrix[row1][(col1 + 1) % 5] + matrix[row2][(col2 + 1) % 5]
-    elif col1 == col2:
-        # Same column: move down
-        return matrix[(row1 + 1) % 5][col1] + matrix[(row2 + 1) % 5][col2]
-    else:
-        # Rectangle swap
-        return matrix[row1][col2] + matrix[row2][col1]
-
-
-def decrypt_pair(matrix, a, b):
-    """ Decrypt a pair of characters """
-    row1, col1 = find_position(matrix, a)
-    row2, col2 = find_position(matrix, b)
-
-    if row1 == row2:
-        # Same row: move left
-        return matrix[row1][(col1 - 1) % 5] + matrix[row2][(col2 - 1) % 5]
-    elif col1 == col2:
-        # Same column: move up
-        return matrix[(row1 - 1) % 5][col1] + matrix[(row2 - 1) % 5][col2]
-    else:
-        # Rectangle swap
-        return matrix[row1][col2] + matrix[row2][col1]
-
-
-def playfair_encrypt(matrix, plaintext):
-    """ Encrypt the plaintext using the Playfair cipher """
-    plaintext = prepare_text(plaintext)
-    ciphertext = ""
-
-    for i in range(0, len(plaintext), 2):
-        ciphertext += encrypt_pair(matrix, plaintext[i], plaintext[i + 1])
-
-    return ciphertext
-
-
-def playfair_decrypt(matrix, ciphertext):
-    """ Decrypt the ciphertext using the Playfair cipher """
-    plaintext = ""
-
-    for i in range(0, len(ciphertext), 2):
-        plaintext += decrypt_pair(matrix, ciphertext[i], ciphertext[i + 1])
-
-    return plaintext
-
-
-# Main function to run the Playfair Cipher
-def main():
-    key = input("Enter the key: ").strip()
-    plaintext = input("Enter the plaintext: ").strip()
-
-    # Generate key matrix
-    matrix = generate_key_matrix(key)
-
-    print("\nKey Matrix:")
-    for row in matrix:
-        print(" ".join(row))
-
-    # Encrypt and decrypt
-    ciphertext = playfair_encrypt(matrix, plaintext)
-    decrypted_text = playfair_decrypt(matrix, ciphertext)
-    
-    print("\nPlain Text:", decrypted_text)
-    print("Encrypted Text:", ciphertext)
-    
-
-
-# Run the program
-if __name__ == "__main__":
-    main()
-```
-## Output:
-<img width="472" height="442" alt="image" src="https://github.com/user-attachments/assets/f46e470b-cc1d-451a-b8fd-00c5179f74fa" />
-
-## Result:
-Thus the program for playfair cipher is executed successfully.
+## RESULT:
+The program was executed successfully.
